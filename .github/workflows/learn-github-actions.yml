@@ -36,9 +36,18 @@ jobs:
           echo Add other actions to build,
           echo test, and deploy your project.
 
-  # test:
-  #   runs-on: node:alpine
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Run tests report
-  #       run: npm run test
+  test:
+    runs-on: ubuntu-latest
+    container: node:alpine
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install dependencies
+        run: npm i
+      
+      - name: Run tests report
+        run: npm run test
+        with:
+          name: report
+          path: junit.xml
