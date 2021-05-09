@@ -11,7 +11,7 @@ on:
     branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  # workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -27,14 +27,25 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - name: Check install dependencies
         run: npm i
 
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }} 
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      # - name: Run a multi-line script
+      #   run: |
+      #     echo Add other actions to build,
+      #     echo test, and deploy your project.
 
   test:
     runs-on: ubuntu-latest
@@ -42,6 +53,8 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v2
+
+      - name: rest
       
       - name: Install dependencies
         run: npm i
@@ -71,7 +84,7 @@ jobs:
         uses: schneegans/dynamic-badges-action@v1.0.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
-          gistID: 7d4c25ef2e97e8de523ef7c1fee26e8e
+          gistID: 416bb7eae84eb31b79c9aa98c387b650
           filename: your-repo-name__${{ env.BRANCH }}.json
           label: Test Coverage
           message: ${{ env.COVERAGE }}
